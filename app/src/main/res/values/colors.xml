@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand: neon cyan / magenta on near-black -->
+    <color name="gv_neon_cyan">#00E5FF</color>
+    <color name="gv_neon_cyan_dim">#00B8D4</color>
+    <color name="gv_neon_magenta">#FF4081</color>
+    <color name="gv_neon_magenta_dim">#C2185B</color>
+    <color name="gv_accent_gold">#FFD740</color>
+
+    <!-- Dark surfaces -->
+    <color name="gv_bg_dark">#0B0D11</color>
+    <color name="gv_surface_dark">#14171C</color>
+    <color name="gv_surface_dark_elevated">#1C2027</color>
+    <color name="gv_outline_dark">#2A2F38</color>
+    <color name="gv_on_dark">#ECEFF4</color>
+    <color name="gv_on_dark_muted">#9DA4B0</color>
+
+    <!-- Light surfaces (fallback when user picks light mode) -->
+    <color name="gv_bg_light">#F7F8FA</color>
+    <color name="gv_surface_light">#FFFFFF</color>
+    <color name="gv_surface_light_elevated">#F0F2F5</color>
+    <color name="gv_outline_light">#D7DBE0</color>
+    <color name="gv_on_light">#0B0D11</color>
+    <color name="gv_on_light_muted">#5A6270</color>
+
+    <!-- Status chips -->
+    <color name="gv_status_playing">#00E5FF</color>
+    <color name="gv_status_completed">#69F0AE</color>
+    <color name="gv_status_backlog">#FFD740</color>
+    <color name="gv_status_dropped">#FF5252</color>
+    <color name="gv_status_wishlist">#FF4081</color>
+</resources>

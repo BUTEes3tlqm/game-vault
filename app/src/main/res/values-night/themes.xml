@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.GameVault" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/gv_neon_cyan</item>
+        <item name="colorOnPrimary">@color/gv_bg_dark</item>
+        <item name="colorPrimaryContainer">#003D45</item>
+        <item name="colorOnPrimaryContainer">#B2EBF2</item>
+
+        <item name="colorSecondary">@color/gv_neon_magenta</item>
+        <item name="colorOnSecondary">@color/gv_bg_dark</item>
+        <item name="colorSecondaryContainer">#3F0021</item>
+        <item name="colorOnSecondaryContainer">#FFD9E2</item>
+
+        <item name="colorTertiary">@color/gv_accent_gold</item>
+        <item name="colorOnTertiary">@color/gv_bg_dark</item>
+
+        <item name="android:colorBackground">@color/gv_bg_dark</item>
+        <item name="colorSurface">@color/gv_surface_dark</item>
+        <item name="colorOnSurface">@color/gv_on_dark</item>
+        <item name="colorSurfaceVariant">@color/gv_surface_dark_elevated</item>
+        <item name="colorOnSurfaceVariant">@color/gv_on_dark_muted</item>
+        <item name="colorOutline">@color/gv_outline_dark</item>
+
+        <item name="android:statusBarColor">@color/gv_bg_dark</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+    </style>
+
+</resources>

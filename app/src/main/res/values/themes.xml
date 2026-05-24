@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.GameVault" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/gv_neon_cyan_dim</item>
+        <item name="colorOnPrimary">@color/gv_on_light</item>
+        <item name="colorPrimaryContainer">#B2EBF2</item>
+        <item name="colorOnPrimaryContainer">#003D45</item>
+
+        <item name="colorSecondary">@color/gv_neon_magenta_dim</item>
+        <item name="colorOnSecondary">@color/gv_on_dark</item>
+        <item name="colorSecondaryContainer">#FFD9E2</item>
+        <item name="colorOnSecondaryContainer">#3F0021</item>
+
+        <item name="colorTertiary">@color/gv_accent_gold</item>
+        <item name="colorOnTertiary">@color/gv_on_light</item>
+
+        <item name="android:colorBackground">@color/gv_bg_light</item>
+        <item name="colorSurface">@color/gv_surface_light</item>
+        <item name="colorOnSurface">@color/gv_on_light</item>
+        <item name="colorSurfaceVariant">@color/gv_surface_light_elevated</item>
+        <item name="colorOnSurfaceVariant">@color/gv_on_light_muted</item>
+        <item name="colorOutline">@color/gv_outline_light</item>
+
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+    </style>
+
+    <style name="Theme.GameVault.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/gv_bg_dark</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.GameVault</item>
+    </style>
+
+</resources>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/libraryFragment">
+
+    <fragment
+        android:id="@+id/libraryFragment"
+        android:name="mk.fikt.gamevault.ui.library.LibraryFragment"
+        android:label="@string/library_title"
+        tools:layout="@layout/fragment_library">
+        <action
+            android:id="@+id/action_library_to_addGame"
+            app:destination="@id/addEditGameFragment" />
+        <action
+            android:id="@+id/action_library_to_details"
+            app:destination="@id/gameDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/reviewsFragment"
+        android:name="mk.fikt.gamevault.ui.reviews.ReviewsFragment"
+        android:label="@string/reviews_title"
+        tools:layout="@layout/fragment_reviews" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="mk.fikt.gamevault.ui.profile.ProfileFragment"
+        android:label="@string/profile_title"
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_profile_to_settings"
+            app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_profile_to_stats"
+            app:destination="@id/statisticsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addEditGameFragment"
+        android:name="mk.fikt.gamevault.ui.addgame.AddEditGameFragment"
+        android:label="@string/add_game_title"
+        tools:layout="@layout/fragment_add_edit_game">
+        <argument
+            android:name="gameId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/gameDetailsFragment"
+        android:name="mk.fikt.gamevault.ui.details.GameDetailsFragment"
+        android:label="@string/details_overview"
+        tools:layout="@layout/fragment_game_details">
+        <argument
+            android:name="gameId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_details_to_edit"
+            app:destination="@id/addEditGameFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="mk.fikt.gamevault.ui.settings.SettingsFragment"
+        android:label="@string/settings_title"
+        tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/statisticsFragment"
+        android:name="mk.fikt.gamevault.ui.stats.StatisticsFragment"
+        android:label="@string/stats_title"
+        tools:layout="@layout/fragment_statistics" />
+
+</navigation>
