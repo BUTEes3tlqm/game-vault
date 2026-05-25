@@ -6,6 +6,7 @@
     <string name="common_save">Save</string>
     <string name="common_delete">Delete</string>
     <string name="common_edit">Edit</string>
+    <string name="common_confirm">Confirm</string>
     <string name="common_error_generic">Something went wrong</string>
 
     <!-- Auth -->
@@ -180,4 +181,18 @@
     <string name="account_required_title">Account needed</string>
     <string name="account_required_message">Guests can browse, but you need an account to add games, write reviews, and customize your profile. Sign in or create one to continue.</string>
     <string name="account_required_sign_in">Sign in / Sign up</string>
+
+    <!-- Delete account -->
+    <string name="delete_account_button">Delete account</string>
+    <string name="delete_account_warning_title">Delete account?</string>
+    <string name="delete_account_warning_message">This will permanently remove your profile, all games in your library, all reviews you\'ve written, and your sign-in. This cannot be undone.</string>
+    <string name="delete_account_warning_continue">Continue</string>
+    <string name="delete_account_screen_title">Delete this account?</string>
+    <string name="delete_account_screen_explanation">This is your last chance. Type the word below exactly to enable the delete button.</string>
+    <string name="delete_account_confirm_word" translatable="false">DELETE</string>
+    <string name="delete_account_type_hint">Type confirmation</string>
+    <string name="delete_account_type_hint_format">Type %1$s to confirm</string>
+    <string name="delete_account_reauth_password_title">Confirm your password</string>
+    <string name="delete_account_reauth_password_message">For security, re-enter your password to finish deleting your account.</string>
+    <string name="delete_account_error">Account deletion failed. Please try again.</string>
 </resources>

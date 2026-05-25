@@ -6,6 +6,7 @@
     <string name="common_save">Зачувај</string>
     <string name="common_delete">Избриши</string>
     <string name="common_edit">Уреди</string>
+    <string name="common_confirm">Потврди</string>
     <string name="common_error_generic">Се случи грешка</string>
 
     <!-- Auth -->
@@ -180,4 +181,18 @@
     <string name="account_required_title">Потребна е сметка</string>
     <string name="account_required_message">Гостите можат да прелистуваат, но за да додаваш игри, пишуваш рецензии и да го прилагодиш профилот, ти треба сметка. Најави се или регистрирај се за да продолжиш.</string>
     <string name="account_required_sign_in">Најави се / Регистрирај се</string>
+
+    <!-- Delete account -->
+    <string name="delete_account_button">Избриши сметка</string>
+    <string name="delete_account_warning_title">Да ja избришеш сметката?</string>
+    <string name="delete_account_warning_message">Ова трајно ќе го отстрани твојот профил, сите игри во библиотеката, сите рецензии што си ги напишал и твојата најава. Ова не може да се поврати.</string>
+    <string name="delete_account_warning_continue">Продолжи</string>
+    <string name="delete_account_screen_title">Да ja избришеш оваа сметка?</string>
+    <string name="delete_account_screen_explanation">Ова е последната шанса. Точно внеси го зборот подолу за да го овозможиш копчето за бришење.</string>
+    <string name="delete_account_confirm_word" translatable="false">ИЗБРИШИ</string>
+    <string name="delete_account_type_hint">Внеси потврда</string>
+    <string name="delete_account_type_hint_format">Внеси %1$s за потврда</string>
+    <string name="delete_account_reauth_password_title">Потврди ja лозинката</string>
+    <string name="delete_account_reauth_password_message">Поради безбедност, повторно внеси ja лозинката за да заврши бришењето.</string>
+    <string name="delete_account_error">Бришењето на сметката не успеа. Обиди се повторно.</string>
 </resources>

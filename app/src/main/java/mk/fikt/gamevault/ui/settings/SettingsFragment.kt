@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import mk.fikt.gamevault.BuildConfig
 import mk.fikt.gamevault.R
 import mk.fikt.gamevault.databinding.FragmentSettingsBinding
@@ -40,6 +41,9 @@ class SettingsFragment : Fragment() {
         wireTheme()
         wireNotifications()
         binding.versionText.text = getString(R.string.settings_version, BuildConfig.VERSION_NAME)
+        binding.deleteAccountButton.setOnClickListener {
+            findNavController().navigate(R.id.action_settings_to_deleteAccount)
+        }
     }
 
     private fun wireLanguage() {

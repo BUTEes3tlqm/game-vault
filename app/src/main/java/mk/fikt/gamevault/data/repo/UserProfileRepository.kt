@@ -14,9 +14,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import mk.fikt.gamevault.data.auth.AuthRepository
 import mk.fikt.gamevault.data.auth.AuthUser
+import mk.fikt.gamevault.data.local.GameDao
+import mk.fikt.gamevault.data.local.ReviewDao
 import mk.fikt.gamevault.data.local.UserProfileDao
 import mk.fikt.gamevault.data.local.UserProfileEntity
+import mk.fikt.gamevault.data.remote.FirestoreSchema.COLLECTION_REVIEWS
 import mk.fikt.gamevault.data.remote.FirestoreSchema.COLLECTION_USERS
+import mk.fikt.gamevault.data.remote.FirestoreSchema.FIELD_AUTHOR_UID
+import mk.fikt.gamevault.data.remote.FirestoreSchema.SUBCOLLECTION_GAMES
 import mk.fikt.gamevault.data.remote.FirestoreSchema.FIELD_DISPLAY_NAME
 import mk.fikt.gamevault.data.remote.FirestoreSchema.FIELD_DISPLAY_NAME_LOWER
 import mk.fikt.gamevault.data.remote.FirestoreSchema.FIELD_EMAIL
@@ -28,6 +33,8 @@ import mk.fikt.gamevault.data.remote.FirestoreSchema.FIELD_PHOTO_URL
 
 class UserProfileRepository(
     private val dao: UserProfileDao,
+    private val gameDao: GameDao,
+    private val reviewDao: ReviewDao,
     private val authRepository: AuthRepository,
     private val firebaseAvailable: Boolean,
     private val scope: CoroutineScope,
@@ -142,6 +149,46 @@ class UserProfileRepository(
                 }
         }
     }
+
+    /**
+     * Deletes the current user's data from Firestore (reviews, games subcollection, profile doc)
+     * and wipes their rows from Room. Does NOT delete the auth account — that's [AuthRepository.deleteAccount].
+     * Returns true if all deletes succeeded.
+     */
+    suspend fun purgeOwnData(): Boolean {
+        val uid = authRepository.currentUser()?.uid ?: return false
+        val fs = firestore
+        var ok = true
+        if (fs != null) {
+            // 1) Reviews authored by uid (global collection).
+            ok = ok && deleteWhere(fs.collection(COLLECTION_REVIEWS)
+                .whereEqualTo(FIELD_AUTHOR_UID, uid))
+            // 2) Games subcollection.
+            ok = ok && deleteAll(fs.collection(COLLECTION_USERS).document(uid)
+                .collection(SUBCOLLECTION_GAMES))
+            // 3) User profile doc.
+            ok = ok && runCatching {
+                fs.collection(COLLECTION_USERS).document(uid).delete().await()
+            }.isSuccess
+        }
+        // Local wipe regardless of Firestore outcome — we'll be signed out either way on success.
+        runCatching { reviewDao.deleteAllByAuthor(uid) }
+        runCatching { gameDao.deleteAllForOwner(uid) }
+        runCatching { dao.delete(uid) }
+        return ok
+    }
+
+    private suspend fun deleteWhere(query: com.google.firebase.firestore.Query): Boolean =
+        runCatching {
+            val snap = query.get().await()
+            snap.documents.forEach { it.reference.delete().await() }
+        }.isSuccess
+
+    private suspend fun deleteAll(coll: com.google.firebase.firestore.CollectionReference): Boolean =
+        runCatching {
+            val snap = coll.get().await()
+            snap.documents.forEach { it.reference.delete().await() }
+        }.isSuccess
 
     private fun DocumentSnapshot.toEntity(uid: String): UserProfileEntity? {
         if (!exists()) return null

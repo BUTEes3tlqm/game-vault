@@ -37,6 +37,8 @@ object AppContainer {
     val userProfileRepository: UserProfileRepository by lazy {
         UserProfileRepository(
             database.userProfileDao(),
+            database.gameDao(),
+            database.reviewDao(),
             authRepository,
             firebaseAvailable,
             applicationScope,

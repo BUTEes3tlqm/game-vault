@@ -182,5 +182,16 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Danger zone -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/deleteAccountButton"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/delete_account_button"
+            android:textColor="?attr/colorError"
+            app:strokeColor="?attr/colorError" />
+
     </LinearLayout>
 </ScrollView>

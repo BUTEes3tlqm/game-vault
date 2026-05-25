@@ -95,7 +95,17 @@
         android:id="@+id/settingsFragment"
         android:name="mk.fikt.gamevault.ui.settings.SettingsFragment"
         android:label="@string/settings_title"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_settings">
+        <action
+            android:id="@+id/action_settings_to_deleteAccount"
+            app:destination="@id/deleteAccountFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/deleteAccountFragment"
+        android:name="mk.fikt.gamevault.ui.account.DeleteAccountFragment"
+        android:label="@string/delete_account_screen_title"
+        tools:layout="@layout/fragment_delete_account" />
 
     <fragment
         android:id="@+id/statisticsFragment"

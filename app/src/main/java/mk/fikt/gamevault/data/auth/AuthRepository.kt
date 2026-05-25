@@ -1,9 +1,11 @@
 package mk.fikt.gamevault.data.auth
 
 import com.google.firebase.FirebaseNetworkException
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.FirebaseUser
@@ -73,6 +75,45 @@ class AuthRepository(private val firebaseAvailable: Boolean) {
 
     fun signOut() {
         auth?.signOut()
+    }
+
+    /** Result of [deleteAccount]. */
+    sealed class DeleteOutcome {
+        data object Success : DeleteOutcome()
+        /** Firebase rejected the delete because the sign-in is too old; UI must re-auth. */
+        data object RequiresRecentLogin : DeleteOutcome()
+        data object NotConfigured : DeleteOutcome()
+        data class Failure(val error: AuthError) : DeleteOutcome()
+    }
+
+    suspend fun deleteAccount(): DeleteOutcome {
+        val user = auth?.currentUser ?: return DeleteOutcome.NotConfigured
+        return runCatching { user.delete().await() }.fold(
+            onSuccess = { DeleteOutcome.Success },
+            onFailure = { e ->
+                if (e is FirebaseAuthRecentLoginRequiredException) DeleteOutcome.RequiresRecentLogin
+                else DeleteOutcome.Failure(e.toAuthError())
+            },
+        )
+    }
+
+    suspend fun reauthenticateEmail(password: String): AuthOutcome {
+        val user = auth?.currentUser ?: return AuthOutcome.NotConfigured
+        val email = user.email ?: return AuthOutcome.Failure(AuthError.UNKNOWN)
+        val credential = EmailAuthProvider.getCredential(email, password)
+        return runCatching { user.reauthenticate(credential).await() }.fold(
+            onSuccess = { AuthOutcome.Success(user.toAuthUser()) },
+            onFailure = { AuthOutcome.Failure(it.toAuthError()) },
+        )
+    }
+
+    suspend fun reauthenticateGoogle(idToken: String): AuthOutcome {
+        val user = auth?.currentUser ?: return AuthOutcome.NotConfigured
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        return runCatching { user.reauthenticate(credential).await() }.fold(
+            onSuccess = { AuthOutcome.Success(user.toAuthUser()) },
+            onFailure = { AuthOutcome.Failure(it.toAuthError()) },
+        )
     }
 
     private fun Result<com.google.firebase.auth.AuthResult>.toOutcome(): AuthOutcome =
