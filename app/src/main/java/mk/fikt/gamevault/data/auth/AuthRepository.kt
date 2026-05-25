@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.UserProfileChangeRequest
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -77,6 +78,13 @@ class AuthRepository(private val firebaseAvailable: Boolean) {
         auth?.signOut()
     }
 
+    /** Returns Firebase provider ids for the current user, e.g. "password", "google.com". */
+    fun currentUserProviders(): List<String> =
+        auth?.currentUser?.providerData
+            ?.map { it.providerId }
+            ?.filter { it != "firebase" }  // remove the dummy Firebase entry
+            .orEmpty()
+
     /** Result of [deleteAccount]. */
     sealed class DeleteOutcome {
         data object Success : DeleteOutcome()
@@ -88,32 +96,43 @@ class AuthRepository(private val firebaseAvailable: Boolean) {
 
     suspend fun deleteAccount(): DeleteOutcome {
         val user = auth?.currentUser ?: return DeleteOutcome.NotConfigured
-        return runCatching { user.delete().await() }.fold(
-            onSuccess = { DeleteOutcome.Success },
-            onFailure = { e ->
-                if (e is FirebaseAuthRecentLoginRequiredException) DeleteOutcome.RequiresRecentLogin
-                else DeleteOutcome.Failure(e.toAuthError())
-            },
-        )
+        return try {
+            user.delete().await()
+            DeleteOutcome.Success
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: FirebaseAuthRecentLoginRequiredException) {
+            DeleteOutcome.RequiresRecentLogin
+        } catch (e: Throwable) {
+            DeleteOutcome.Failure(e.toAuthError())
+        }
     }
 
     suspend fun reauthenticateEmail(password: String): AuthOutcome {
         val user = auth?.currentUser ?: return AuthOutcome.NotConfigured
         val email = user.email ?: return AuthOutcome.Failure(AuthError.UNKNOWN)
         val credential = EmailAuthProvider.getCredential(email, password)
-        return runCatching { user.reauthenticate(credential).await() }.fold(
-            onSuccess = { AuthOutcome.Success(user.toAuthUser()) },
-            onFailure = { AuthOutcome.Failure(it.toAuthError()) },
-        )
+        return try {
+            user.reauthenticate(credential).await()
+            AuthOutcome.Success(user.toAuthUser())
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Throwable) {
+            AuthOutcome.Failure(e.toAuthError())
+        }
     }
 
     suspend fun reauthenticateGoogle(idToken: String): AuthOutcome {
         val user = auth?.currentUser ?: return AuthOutcome.NotConfigured
         val credential = GoogleAuthProvider.getCredential(idToken, null)
-        return runCatching { user.reauthenticate(credential).await() }.fold(
-            onSuccess = { AuthOutcome.Success(user.toAuthUser()) },
-            onFailure = { AuthOutcome.Failure(it.toAuthError()) },
-        )
+        return try {
+            user.reauthenticate(credential).await()
+            AuthOutcome.Success(user.toAuthUser())
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Throwable) {
+            AuthOutcome.Failure(e.toAuthError())
+        }
     }
 
     private fun Result<com.google.firebase.auth.AuthResult>.toOutcome(): AuthOutcome =

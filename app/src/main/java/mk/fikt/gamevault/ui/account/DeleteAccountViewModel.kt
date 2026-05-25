@@ -49,16 +49,12 @@ class DeleteAccountViewModel(
         if (_state.value is State.Deleting) return
         viewModelScope.launch {
             _state.value = State.Deleting
-            val purged = try {
-                withTimeout(TIMEOUT_MS) { userRepo.purgeOwnData() }
-            } catch (_: TimeoutCancellationException) {
-                false
+            // Best-effort Firestore wipe — don't block the auth delete if it fails/times out.
+            // If the wipe fails, the user's data is orphaned but the account still gets deleted.
+            try {
+                withTimeout(WIPE_TIMEOUT_MS) { userRepo.purgeOwnData() }
             } catch (_: Throwable) {
-                false
-            }
-            if (!purged) {
-                _state.value = State.Error()
-                return@launch
+                // continue regardless
             }
             performAuthDelete()
         }
@@ -108,14 +104,13 @@ class DeleteAccountViewModel(
             AuthRepository.DeleteOutcome.Success -> _events.send(Event.Done)
             AuthRepository.DeleteOutcome.RequiresRecentLogin -> {
                 val user = authRepo.currentUser()
+                val providers = authRepo.currentUserProviders()
                 val kind = when {
-                    user == null || user.isAnonymous -> {
-                        // Anon shouldn't require reauth; treat as fatal error.
-                        _state.value = State.Error()
-                        return
-                    }
-                    !user.email.isNullOrBlank() -> ReauthKind.EMAIL_PASSWORD
-                    else -> ReauthKind.GOOGLE
+                    user == null -> { _state.value = State.Error(); return }
+                    user.isAnonymous -> { _state.value = State.Error(); return }
+                    "password" in providers -> ReauthKind.EMAIL_PASSWORD
+                    "google.com" in providers -> ReauthKind.GOOGLE
+                    else -> { _state.value = State.Error(); return }
                 }
                 _state.value = State.RequiresReauth(kind)
             }
@@ -125,7 +120,8 @@ class DeleteAccountViewModel(
     }
 
     companion object Factory : ViewModelProvider.Factory {
-        private const val TIMEOUT_MS = 30_000L
+        private const val TIMEOUT_MS = 10_000L
+        private const val WIPE_TIMEOUT_MS = 5_000L
 
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")

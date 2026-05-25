@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -167,28 +168,43 @@ class UserProfileRepository(
             ok = ok && deleteAll(fs.collection(COLLECTION_USERS).document(uid)
                 .collection(SUBCOLLECTION_GAMES))
             // 3) User profile doc.
-            ok = ok && runCatching {
-                fs.collection(COLLECTION_USERS).document(uid).delete().await()
-            }.isSuccess
+            ok = ok && tryDeleteDoc { fs.collection(COLLECTION_USERS).document(uid).delete().await() }
         }
         // Local wipe regardless of Firestore outcome — we'll be signed out either way on success.
-        runCatching { reviewDao.deleteAllByAuthor(uid) }
-        runCatching { gameDao.deleteAllForOwner(uid) }
-        runCatching { dao.delete(uid) }
+        try { reviewDao.deleteAllByAuthor(uid) } catch (e: CancellationException) { throw e } catch (_: Throwable) {}
+        try { gameDao.deleteAllForOwner(uid) } catch (e: CancellationException) { throw e } catch (_: Throwable) {}
+        try { dao.delete(uid) } catch (e: CancellationException) { throw e } catch (_: Throwable) {}
         return ok
     }
 
-    private suspend fun deleteWhere(query: com.google.firebase.firestore.Query): Boolean =
-        runCatching {
-            val snap = query.get().await()
-            batchDelete(snap.documents)
-        }.isSuccess
+    private suspend fun deleteWhere(query: com.google.firebase.firestore.Query): Boolean = try {
+        val snap = query.get().await()
+        batchDelete(snap.documents)
+        true
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Throwable) {
+        false
+    }
 
-    private suspend fun deleteAll(coll: com.google.firebase.firestore.CollectionReference): Boolean =
-        runCatching {
-            val snap = coll.get().await()
-            batchDelete(snap.documents)
-        }.isSuccess
+    private suspend fun deleteAll(coll: com.google.firebase.firestore.CollectionReference): Boolean = try {
+        val snap = coll.get().await()
+        batchDelete(snap.documents)
+        true
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Throwable) {
+        false
+    }
+
+    private suspend inline fun tryDeleteDoc(block: suspend () -> Unit): Boolean = try {
+        block()
+        true
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Throwable) {
+        false
+    }
 
     private suspend fun batchDelete(docs: List<com.google.firebase.firestore.DocumentSnapshot>) {
         if (docs.isEmpty()) return
