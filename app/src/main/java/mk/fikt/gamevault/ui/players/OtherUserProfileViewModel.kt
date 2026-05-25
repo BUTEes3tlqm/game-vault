@@ -29,7 +29,7 @@ class OtherUserProfileViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val profile: StateFlow<UserProfileEntity?> = uidFlow
         .flatMapLatest { uid ->
-            if (uid.isNullOrBlank()) flowOf(null) else userRepo.observeRemote(uid)
+            if (uid.isNullOrBlank()) flowOf(null) else userRepo.observe(uid)
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 

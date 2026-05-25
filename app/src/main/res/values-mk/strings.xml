@@ -15,6 +15,8 @@
     <string name="auth_sign_in">Најави се</string>
     <string name="auth_sign_up">Регистрирај се</string>
     <string name="auth_sign_out">Одјави се</string>
+    <string name="auth_sign_out_confirm_title">Да се одјавиш?</string>
+    <string name="auth_sign_out_confirm_message">Ќе треба повторно да се најавиш за да ѝ пристапиш на библиотеката.</string>
     <string name="auth_email_hint">Е-пошта</string>
     <string name="auth_password_hint">Лозинка</string>
     <string name="auth_confirm_password_hint">Потврди лозинка</string>
@@ -53,6 +55,12 @@
     <string name="library_filter_dropped">Прекинати</string>
     <string name="library_filter_wishlist">Листа на желби</string>
     <string name="library_search_hint">Пребарај игри</string>
+    <string name="library_sort">Подреди</string>
+    <string name="library_sort_recent">Неодамна ажурирани</string>
+    <string name="library_sort_name">Име (А → Ш)</string>
+    <string name="library_sort_rating">Оцена (висока → ниска)</string>
+    <string name="library_sort_hours">Поминати часови (повеќе → помалку)</string>
+    <string name="library_sort_date_added">Датум на додавање (најнови)</string>
     <plurals name="library_game_count">
         <item quantity="one">%d игра</item>
         <item quantity="other">%d игри</item>
@@ -156,6 +164,8 @@
     <!-- Notifications -->
     <string name="notification_channel_general_name">Општо</string>
     <string name="notification_channel_general_description">Општи известувања од апликацијата</string>
+    <string name="notification_review_match_title">Нова рецензија на твојата листа</string>
+    <string name="notification_review_match_body">%1$s рецензираше %2$s</string>
 
     <!-- Players -->
     <string name="players_title">Играчи</string>

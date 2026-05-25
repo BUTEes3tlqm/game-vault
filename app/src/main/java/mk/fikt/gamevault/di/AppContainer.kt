@@ -10,6 +10,7 @@ import mk.fikt.gamevault.data.analytics.AnalyticsLogger
 import mk.fikt.gamevault.data.auth.AuthRepository
 import mk.fikt.gamevault.data.auth.GoogleSignInHelper
 import mk.fikt.gamevault.data.local.AppDatabase
+import mk.fikt.gamevault.data.messaging.ReviewMatchNotifier
 import mk.fikt.gamevault.data.repo.GameRepository
 import mk.fikt.gamevault.data.repo.ReviewRepository
 import mk.fikt.gamevault.data.repo.UserProfileRepository
@@ -56,8 +57,16 @@ object AppContainer {
             }
         }
     }
+    val reviewMatchNotifier: ReviewMatchNotifier by lazy { ReviewMatchNotifier(appContext) }
     val reviewRepository: ReviewRepository by lazy {
-        ReviewRepository(database.reviewDao(), firebaseAvailable, applicationScope)
+        ReviewRepository(
+            database.reviewDao(),
+            database.gameDao(),
+            authRepository,
+            reviewMatchNotifier,
+            firebaseAvailable,
+            applicationScope,
+        )
     }
     val analytics: AnalyticsLogger by lazy { AnalyticsLogger(firebaseAvailable) }
     val prefs: Prefs by lazy { Prefs(appContext) }

@@ -15,6 +15,8 @@
     <string name="auth_sign_in">Sign in</string>
     <string name="auth_sign_up">Sign up</string>
     <string name="auth_sign_out">Sign out</string>
+    <string name="auth_sign_out_confirm_title">Sign out?</string>
+    <string name="auth_sign_out_confirm_message">You\'ll need to sign in again to access your library.</string>
     <string name="auth_email_hint">Email</string>
     <string name="auth_password_hint">Password</string>
     <string name="auth_confirm_password_hint">Confirm password</string>
@@ -53,6 +55,12 @@
     <string name="library_filter_dropped">Dropped</string>
     <string name="library_filter_wishlist">Wishlist</string>
     <string name="library_search_hint">Search games</string>
+    <string name="library_sort">Sort</string>
+    <string name="library_sort_recent">Recently updated</string>
+    <string name="library_sort_name">Name (A → Z)</string>
+    <string name="library_sort_rating">Rating (high → low)</string>
+    <string name="library_sort_hours">Hours played (high → low)</string>
+    <string name="library_sort_date_added">Date added (newest first)</string>
     <plurals name="library_game_count">
         <item quantity="one">%d game</item>
         <item quantity="other">%d games</item>
@@ -156,6 +164,8 @@
     <!-- Notifications -->
     <string name="notification_channel_general_name">General</string>
     <string name="notification_channel_general_description">General app notifications</string>
+    <string name="notification_review_match_title">New review on your wishlist</string>
+    <string name="notification_review_match_body">%1$s reviewed %2$s</string>
 
     <!-- Players -->
     <string name="players_title">Players</string>

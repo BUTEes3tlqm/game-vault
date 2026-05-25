@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import mk.fikt.gamevault.R
 import mk.fikt.gamevault.databinding.FragmentProfileBinding
@@ -69,13 +70,22 @@ class ProfileFragment : Fragment() {
             findNavController().navigate(R.id.action_profile_to_settings)
         }
         binding.signOutButton.setOnClickListener {
-            AppContainer.authRepository.signOut()
-            AppContainer.googleSignInHelper.signOut()
-            startActivity(Intent(requireContext(), AuthActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            })
-            requireActivity().finish()
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.auth_sign_out_confirm_title)
+                .setMessage(R.string.auth_sign_out_confirm_message)
+                .setNegativeButton(R.string.common_cancel, null)
+                .setPositiveButton(R.string.auth_sign_out) { _, _ -> performSignOut() }
+                .show()
         }
+    }
+
+    private fun performSignOut() {
+        AppContainer.authRepository.signOut()
+        AppContainer.googleSignInHelper.signOut()
+        startActivity(Intent(requireContext(), AuthActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        })
+        requireActivity().finish()
     }
 
     override fun onDestroyView() {

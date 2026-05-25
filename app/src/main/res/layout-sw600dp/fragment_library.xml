@@ -30,7 +30,10 @@
                 android:layout_marginHorizontal="12dp"
                 android:layout_marginTop="12dp"
                 android:hint="@string/library_search_hint"
-                app:startIconDrawable="@android:drawable/ic_menu_search">
+                app:startIconDrawable="@android:drawable/ic_menu_search"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/ic_sort"
+                app:endIconContentDescription="@string/library_sort">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/searchInput"

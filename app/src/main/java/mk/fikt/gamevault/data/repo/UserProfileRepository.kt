@@ -95,10 +95,10 @@ class UserProfileRepository(
         val updated = current.copy(gameCount = count)
         dao.upsert(updated)
         val fs = firestore ?: return
+        // Fire-and-forget: don't block the save flow on a network round-trip.
         runCatching {
             fs.collection(COLLECTION_USERS).document(uid)
                 .set(mapOf(FIELD_GAME_COUNT to count), SetOptions.merge())
-                .await()
         }
     }
 
@@ -181,14 +181,25 @@ class UserProfileRepository(
     private suspend fun deleteWhere(query: com.google.firebase.firestore.Query): Boolean =
         runCatching {
             val snap = query.get().await()
-            snap.documents.forEach { it.reference.delete().await() }
+            batchDelete(snap.documents)
         }.isSuccess
 
     private suspend fun deleteAll(coll: com.google.firebase.firestore.CollectionReference): Boolean =
         runCatching {
             val snap = coll.get().await()
-            snap.documents.forEach { it.reference.delete().await() }
+            batchDelete(snap.documents)
         }.isSuccess
+
+    private suspend fun batchDelete(docs: List<com.google.firebase.firestore.DocumentSnapshot>) {
+        if (docs.isEmpty()) return
+        val fs = firestore ?: return
+        // Firestore caps a single batch at 500 ops.
+        docs.chunked(500).forEach { chunk ->
+            val batch = fs.batch()
+            chunk.forEach { batch.delete(it.reference) }
+            batch.commit().await()
+        }
+    }
 
     private fun DocumentSnapshot.toEntity(uid: String): UserProfileEntity? {
         if (!exists()) return null

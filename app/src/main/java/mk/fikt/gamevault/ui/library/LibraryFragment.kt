@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -61,6 +62,7 @@ class LibraryFragment : Fragment() {
                 findNavController().navigate(R.id.action_library_to_addGame)
             }
         }
+        binding.searchLayout.setEndIconOnClickListener { showSortMenu(it) }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -70,6 +72,24 @@ class LibraryFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun showSortMenu(anchor: View) {
+        val popup = PopupMenu(requireContext(), anchor)
+        popup.menuInflater.inflate(R.menu.library_sort, popup.menu)
+        popup.setOnMenuItemClickListener { item ->
+            val sort = when (item.itemId) {
+                R.id.sort_recent -> LibrarySort.RECENT
+                R.id.sort_name -> LibrarySort.NAME
+                R.id.sort_rating -> LibrarySort.RATING
+                R.id.sort_hours -> LibrarySort.HOURS
+                R.id.sort_date_added -> LibrarySort.DATE_ADDED
+                else -> return@setOnMenuItemClickListener false
+            }
+            viewModel.setSort(sort)
+            true
+        }
+        popup.show()
     }
 
     private val isTwoPane: Boolean

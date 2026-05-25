@@ -3,6 +3,7 @@ package mk.fikt.gamevault.ui.account
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import mk.fikt.gamevault.data.auth.AuthOutcome
 import mk.fikt.gamevault.data.auth.AuthRepository
 import mk.fikt.gamevault.data.repo.UserProfileRepository
@@ -47,7 +49,13 @@ class DeleteAccountViewModel(
         if (_state.value is State.Deleting) return
         viewModelScope.launch {
             _state.value = State.Deleting
-            val purged = runCatching { userRepo.purgeOwnData() }.getOrDefault(false)
+            val purged = try {
+                withTimeout(TIMEOUT_MS) { userRepo.purgeOwnData() }
+            } catch (_: TimeoutCancellationException) {
+                false
+            } catch (_: Throwable) {
+                false
+            }
             if (!purged) {
                 _state.value = State.Error()
                 return@launch
@@ -90,7 +98,13 @@ class DeleteAccountViewModel(
     }
 
     private suspend fun performAuthDelete() {
-        when (val r = authRepo.deleteAccount()) {
+        val outcome = try {
+            withTimeout(TIMEOUT_MS) { authRepo.deleteAccount() }
+        } catch (_: TimeoutCancellationException) {
+            _state.value = State.Error()
+            return
+        }
+        when (outcome) {
             AuthRepository.DeleteOutcome.Success -> _events.send(Event.Done)
             AuthRepository.DeleteOutcome.RequiresRecentLogin -> {
                 val user = authRepo.currentUser()
@@ -111,6 +125,8 @@ class DeleteAccountViewModel(
     }
 
     companion object Factory : ViewModelProvider.Factory {
+        private const val TIMEOUT_MS = 30_000L
+
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
             return DeleteAccountViewModel(

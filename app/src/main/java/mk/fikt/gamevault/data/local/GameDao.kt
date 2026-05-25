@@ -65,6 +65,18 @@ interface GameDao {
     @Query("SELECT * FROM games WHERE syncedToFirestore = 0 AND ownerUid = :uid")
     suspend fun getUnsynced(uid: String): List<GameEntity>
 
+    @Query("""
+        SELECT * FROM games
+        WHERE ownerUid = :uid
+          AND LOWER(title) = LOWER(:title)
+          AND status IN (:statuses)
+    """)
+    suspend fun findByTitleAndStatuses(
+        uid: String,
+        title: String,
+        statuses: List<String>,
+    ): List<GameEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(game: GameEntity)
 

@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mk.fikt.gamevault.R
 import mk.fikt.gamevault.data.local.ReviewEntity
@@ -39,7 +40,12 @@ class ReviewsFragment : Fragment() {
         binding.reviewsRecycler.adapter = adapter
 
         binding.swipeRefresh.setOnRefreshListener {
-            binding.swipeRefresh.isRefreshing = false
+            viewLifecycleOwner.lifecycleScope.launch {
+                // Reviews are already kept live by the Firestore snapshot listener;
+                // this just gives the user a satisfying spinner.
+                delay(700)
+                _binding?.swipeRefresh?.isRefreshing = false
+            }
         }
         binding.writeReviewFab.setOnClickListener {
             requireAccount {
