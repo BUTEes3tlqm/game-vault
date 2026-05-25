@@ -2,22 +2,11 @@
     <string name="app_name" translatable="false">GameVault</string>
 
     <!-- Common -->
-    <string name="common_ok">OK</string>
     <string name="common_cancel">Cancel</string>
     <string name="common_save">Save</string>
     <string name="common_delete">Delete</string>
     <string name="common_edit">Edit</string>
-    <string name="common_retry">Retry</string>
-    <string name="common_loading">Loading…</string>
     <string name="common_error_generic">Something went wrong</string>
-    <string name="common_search">Search</string>
-    <string name="common_filter">Filter</string>
-    <string name="common_close">Close</string>
-    <string name="common_back">Back</string>
-    <string name="common_confirm">Confirm</string>
-    <string name="common_yes">Yes</string>
-    <string name="common_no">No</string>
-    <string name="common_none">None</string>
 
     <!-- Auth -->
     <string name="auth_welcome_title">Welcome to GameVault</string>
@@ -49,6 +38,7 @@
     <string name="nav_library">Library</string>
     <string name="nav_add">Add</string>
     <string name="nav_reviews">Reviews</string>
+    <string name="nav_players">Players</string>
     <string name="nav_profile">Profile</string>
 
     <!-- Library -->
@@ -84,7 +74,6 @@
 
     <!-- Add / Edit game -->
     <string name="add_game_title">Add Game</string>
-    <string name="edit_game_title">Edit Game</string>
     <string name="field_title">Title</string>
     <string name="field_platform">Platform</string>
     <string name="field_year">Release year</string>
@@ -94,12 +83,8 @@
     <string name="field_hours">Hours played</string>
     <string name="field_progress">Progress</string>
     <string name="field_notes">Notes</string>
-    <string name="field_title_hint">e.g. Hollow Knight</string>
-    <string name="field_genre_hint">e.g. Metroidvania</string>
-    <string name="field_notes_hint">Personal notes…</string>
     <string name="choose_cover">Choose cover</string>
     <string name="take_photo">Take photo</string>
-    <string name="retake_photo">Retake photo</string>
     <string name="remove_cover">Remove cover</string>
     <string name="save_game">Save game</string>
     <string name="delete_game">Delete game</string>
@@ -107,8 +92,6 @@
     <string name="delete_confirm_message">Remove this game from your library? This cannot be undone.</string>
     <string name="validation_title_required">Title is required</string>
     <string name="validation_year_invalid">Enter a valid year</string>
-    <string name="validation_rating_range">Rating must be between 0 and 10</string>
-    <string name="validation_progress_range">Progress must be between 0 and 100</string>
     <string name="rating_format">%1$s / 10</string>
     <string name="progress_format">%1$d%%</string>
     <string name="hours_format">%1$s h</string>
@@ -116,19 +99,22 @@
     <!-- Game details -->
     <string name="details_overview">Overview</string>
     <string name="details_my_progress">My progress</string>
-    <string name="details_my_review">My review</string>
     <string name="write_review">Write a review</string>
-    <string name="read_more">Read more</string>
     <string name="cover_image_description">Game cover</string>
 
     <!-- Reviews -->
     <string name="reviews_title">Reviews</string>
-    <string name="reviews_empty">No reviews yet. Be the first!</string>
+    <string name="reviews_empty">You haven\'t written any reviews yet</string>
     <string name="review_by">by %1$s</string>
     <string name="write_review_title">Write review</string>
     <string name="review_text_hint">Share your thoughts…</string>
     <string name="post_review">Post</string>
     <string name="review_posted">Review posted</string>
+    <string name="review_pick_game_hint">Game</string>
+    <string name="review_pick_game_error">Pick a game from your library</string>
+    <string name="review_no_games_hint">Add a game to your library before reviewing.</string>
+    <string name="review_delete_confirm_title">Delete review?</string>
+    <string name="review_delete_confirm_message">Remove this review? This cannot be undone.</string>
 
     <!-- Profile -->
     <string name="profile_title">Profile</string>
@@ -164,11 +150,34 @@
     <string name="settings_version">Version %1$s</string>
 
     <!-- Permissions / hardware -->
-    <string name="permission_camera_rationale">Camera access is needed to take photos for game covers</string>
     <string name="permission_camera_denied">Camera permission denied</string>
-    <string name="permission_notifications_rationale">Notifications keep you updated on new reviews</string>
 
     <!-- Notifications -->
     <string name="notification_channel_general_name">General</string>
     <string name="notification_channel_general_description">General app notifications</string>
+
+    <!-- Players -->
+    <string name="players_title">Players</string>
+    <string name="players_search_hint">Search players</string>
+    <string name="players_empty_title">No other players yet</string>
+    <string name="players_empty_subtitle">Players will appear here once they sign in</string>
+    <string name="player_avatar_description">Player avatar</string>
+
+    <!-- Other user profile -->
+    <string name="other_user_title">Player</string>
+    <string name="other_user_library">Their library</string>
+    <string name="other_user_no_games">This player hasn\'t added any games yet</string>
+    <string name="other_user_reviews">Their reviews</string>
+    <string name="other_user_no_reviews">This player hasn\'t written any reviews yet</string>
+
+    <!-- Edit profile -->
+    <string name="edit_profile_title">Edit profile</string>
+    <string name="edit_profile_photo_url_hint">Avatar URL</string>
+    <string name="edit_profile_photo_url_helper">Paste a link to your avatar image (optional)</string>
+    <string name="edit_profile_saved">Profile saved</string>
+
+    <!-- Account gating -->
+    <string name="account_required_title">Account needed</string>
+    <string name="account_required_message">Guests can browse, but you need an account to add games, write reviews, and customize your profile. Sign in or create one to continue.</string>
+    <string name="account_required_sign_in">Sign in / Sign up</string>
 </resources>

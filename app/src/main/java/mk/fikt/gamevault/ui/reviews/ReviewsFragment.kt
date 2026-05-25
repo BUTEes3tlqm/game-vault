@@ -11,8 +11,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
+import mk.fikt.gamevault.R
+import mk.fikt.gamevault.data.local.ReviewEntity
 import mk.fikt.gamevault.databinding.FragmentReviewsBinding
+import mk.fikt.gamevault.util.requireAccount
 
 class ReviewsFragment : Fragment() {
 
@@ -30,7 +34,7 @@ class ReviewsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = ReviewAdapter()
+        adapter = ReviewAdapter(onLongClick = ::confirmDeleteReview)
         binding.reviewsRecycler.layoutManager = LinearLayoutManager(requireContext())
         binding.reviewsRecycler.adapter = adapter
 
@@ -38,7 +42,9 @@ class ReviewsFragment : Fragment() {
             binding.swipeRefresh.isRefreshing = false
         }
         binding.writeReviewFab.setOnClickListener {
-            WriteReviewBottomSheet.newInstance().show(childFragmentManager, "write_review")
+            requireAccount {
+                WriteReviewBottomSheet.newInstance().show(childFragmentManager, "write_review")
+            }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -49,6 +55,15 @@ class ReviewsFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun confirmDeleteReview(review: ReviewEntity) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.review_delete_confirm_title)
+            .setMessage(R.string.review_delete_confirm_message)
+            .setNegativeButton(R.string.common_cancel, null)
+            .setPositiveButton(R.string.common_delete) { _, _ -> viewModel.deleteReview(review.id) }
+            .show()
     }
 
     override fun onDestroyView() {

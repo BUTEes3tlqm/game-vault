@@ -1,67 +1,59 @@
-package mk.fikt.gamevault.ui.details
+package mk.fikt.gamevault.ui.players
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import mk.fikt.gamevault.data.local.GameEntity
 import mk.fikt.gamevault.data.local.ReviewEntity
+import mk.fikt.gamevault.data.local.UserProfileEntity
 import mk.fikt.gamevault.data.repo.GameRepository
 import mk.fikt.gamevault.data.repo.ReviewRepository
+import mk.fikt.gamevault.data.repo.UserProfileRepository
 import mk.fikt.gamevault.di.AppContainer
 
-class GameDetailsViewModel(
+class OtherUserProfileViewModel(
+    private val userRepo: UserProfileRepository,
     private val gameRepo: GameRepository,
     private val reviewRepo: ReviewRepository,
 ) : ViewModel() {
 
-    sealed class Event {
-        data object Deleted : Event()
-    }
-
-    private val gameIdFlow = MutableStateFlow<String?>(null)
-    private val _events = Channel<Event>(Channel.BUFFERED)
-    val events: Flow<Event> = _events.receiveAsFlow()
+    private val uidFlow = MutableStateFlow<String?>(null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val game: StateFlow<GameEntity?> = gameIdFlow
-        .flatMapLatest { id ->
-            if (id.isNullOrBlank()) flowOf(null) else gameRepo.observeById(id)
+    val profile: StateFlow<UserProfileEntity?> = uidFlow
+        .flatMapLatest { uid ->
+            if (uid.isNullOrBlank()) flowOf(null) else userRepo.observeRemote(uid)
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val reviewsForGame: StateFlow<List<ReviewEntity>> = game
-        .flatMapLatest { g ->
-            if (g == null) flowOf(emptyList())
-            else reviewRepo.observeByGameTitle(g.title)
+    val games: StateFlow<List<GameEntity>> = uidFlow
+        .flatMapLatest { uid ->
+            if (uid.isNullOrBlank()) flowOf(emptyList()) else gameRepo.observeGamesFor(uid)
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    fun load(id: String?) { gameIdFlow.value = id }
-
-    fun delete() {
-        val id = gameIdFlow.value ?: return
-        viewModelScope.launch {
-            gameRepo.delete(id)
-            _events.send(Event.Deleted)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val reviews: StateFlow<List<ReviewEntity>> = uidFlow
+        .flatMapLatest { uid ->
+            if (uid.isNullOrBlank()) flowOf(emptyList()) else reviewRepo.observeByAuthor(uid)
         }
-    }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    fun load(uid: String?) { uidFlow.value = uid }
 
     companion object Factory : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
-            return GameDetailsViewModel(
+            return OtherUserProfileViewModel(
+                AppContainer.userProfileRepository,
                 AppContainer.gameRepository,
                 AppContainer.reviewRepository,
             ) as T

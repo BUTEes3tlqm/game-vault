@@ -43,6 +43,9 @@ interface GameDao {
     @Query("SELECT COUNT(*) FROM games WHERE ownerUid = :uid")
     fun observeCount(uid: String): Flow<Int>
 
+    @Query("SELECT COUNT(*) FROM games WHERE ownerUid = :uid")
+    suspend fun countNow(uid: String): Int
+
     @Query("SELECT COUNT(*) FROM games WHERE ownerUid = :uid AND status = :status")
     fun observeCountByStatus(uid: String, status: GameStatus): Flow<Int>
 

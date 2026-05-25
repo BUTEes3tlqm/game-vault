@@ -24,6 +24,8 @@ import mk.fikt.gamevault.data.model.GameStatus
 import mk.fikt.gamevault.databinding.FragmentGameDetailsBinding
 import mk.fikt.gamevault.databinding.ItemReviewBinding
 import mk.fikt.gamevault.ui.reviews.WriteReviewBottomSheet
+import mk.fikt.gamevault.util.requireAccount
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class GameDetailsFragment : Fragment() {
 
@@ -53,6 +55,15 @@ class GameDetailsFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.reviewsForGame.collect { renderReviews(it) }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.events.collect { e ->
+                    when (e) {
+                        GameDetailsViewModel.Event.Deleted -> findNavController().popBackStack()
+                    }
+                }
             }
         }
     }
@@ -92,14 +103,29 @@ class GameDetailsFragment : Fragment() {
         }
 
         binding.editButton.setOnClickListener {
-            findNavController().navigate(
-                R.id.addEditGameFragment,
-                bundleOf("gameId" to game.id),
-            )
+            requireAccount {
+                findNavController().navigate(
+                    R.id.addEditGameFragment,
+                    bundleOf("gameId" to game.id),
+                )
+            }
         }
+        binding.writeReviewButton.isVisible = game.status.isReviewable
         binding.writeReviewButton.setOnClickListener {
-            WriteReviewBottomSheet.newInstance(gameTitle = game.title, gameId = game.id)
-                .show(parentFragmentManager, "write_review")
+            requireAccount {
+                WriteReviewBottomSheet.newInstance(gameTitle = game.title, gameId = game.id)
+                    .show(parentFragmentManager, "write_review")
+            }
+        }
+        binding.deleteButton.setOnClickListener {
+            requireAccount {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.delete_confirm_title)
+                    .setMessage(R.string.delete_confirm_message)
+                    .setNegativeButton(R.string.common_cancel, null)
+                    .setPositiveButton(R.string.common_delete) { _, _ -> viewModel.delete() }
+                    .show()
+            }
         }
     }
 

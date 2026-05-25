@@ -10,6 +10,9 @@ enum class GameStatus(@StringRes val labelRes: Int) {
     DROPPED(R.string.status_dropped),
     WISHLIST(R.string.status_wishlist);
 
+    /** True for games the user has actually played enough to form an opinion on. */
+    val isReviewable: Boolean get() = this == PLAYING || this == COMPLETED || this == DROPPED
+
     companion object {
         fun fromName(value: String?): GameStatus =
             entries.firstOrNull { it.name == value } ?: BACKLOG

@@ -42,11 +42,19 @@
                     android:textColor="?attr/colorOnSurfaceVariant"
                     tools:text="0 games in your vault" />
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/editProfileButton"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/edit_profile_title" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="24dp">
+                    android:layout_marginTop="12dp">
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/statsButton"

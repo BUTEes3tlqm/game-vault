@@ -2,22 +2,11 @@
 <resources>
 
     <!-- Common -->
-    <string name="common_ok">Во ред</string>
     <string name="common_cancel">Откажи</string>
     <string name="common_save">Зачувај</string>
     <string name="common_delete">Избриши</string>
     <string name="common_edit">Уреди</string>
-    <string name="common_retry">Обиди се повторно</string>
-    <string name="common_loading">Се вчитува…</string>
     <string name="common_error_generic">Се случи грешка</string>
-    <string name="common_search">Пребарај</string>
-    <string name="common_filter">Филтер</string>
-    <string name="common_close">Затвори</string>
-    <string name="common_back">Назад</string>
-    <string name="common_confirm">Потврди</string>
-    <string name="common_yes">Да</string>
-    <string name="common_no">Не</string>
-    <string name="common_none">Ништо</string>
 
     <!-- Auth -->
     <string name="auth_welcome_title">Добредојде во GameVault</string>
@@ -49,6 +38,7 @@
     <string name="nav_library">Библиотека</string>
     <string name="nav_add">Додај</string>
     <string name="nav_reviews">Рецензии</string>
+    <string name="nav_players">Играчи</string>
     <string name="nav_profile">Профил</string>
 
     <!-- Library -->
@@ -84,7 +74,6 @@
 
     <!-- Add / Edit game -->
     <string name="add_game_title">Додај игра</string>
-    <string name="edit_game_title">Уреди игра</string>
     <string name="field_title">Наслов</string>
     <string name="field_platform">Платформа</string>
     <string name="field_year">Година на издавање</string>
@@ -94,12 +83,8 @@
     <string name="field_hours">Поминати часови</string>
     <string name="field_progress">Напредок</string>
     <string name="field_notes">Белешки</string>
-    <string name="field_title_hint">пр. Hollow Knight</string>
-    <string name="field_genre_hint">пр. Метроидванија</string>
-    <string name="field_notes_hint">Лични белешки…</string>
     <string name="choose_cover">Избери омот</string>
     <string name="take_photo">Сликај</string>
-    <string name="retake_photo">Сликај повторно</string>
     <string name="remove_cover">Отстрани омот</string>
     <string name="save_game">Зачувај игра</string>
     <string name="delete_game">Избриши игра</string>
@@ -107,8 +92,6 @@
     <string name="delete_confirm_message">Ja отстрануваш оваа игра од библиотеката? Ова не може да се поврати.</string>
     <string name="validation_title_required">Насловот е задолжителен</string>
     <string name="validation_year_invalid">Внеси валидна година</string>
-    <string name="validation_rating_range">Оцената мора да биде помеѓу 0 и 10</string>
-    <string name="validation_progress_range">Напредокот мора да биде помеѓу 0 и 100</string>
     <string name="rating_format">%1$s / 10</string>
     <string name="progress_format">%1$d%%</string>
     <string name="hours_format">%1$s ч</string>
@@ -116,19 +99,22 @@
     <!-- Game details -->
     <string name="details_overview">Преглед</string>
     <string name="details_my_progress">Мој напредок</string>
-    <string name="details_my_review">Моја рецензија</string>
     <string name="write_review">Напиши рецензија</string>
-    <string name="read_more">Прочитај повеќе</string>
     <string name="cover_image_description">Омот на играта</string>
 
     <!-- Reviews -->
     <string name="reviews_title">Рецензии</string>
-    <string name="reviews_empty">Сè уште нема рецензии. Биди прв!</string>
+    <string name="reviews_empty">Сè уште немаш напишано рецензии</string>
     <string name="review_by">од %1$s</string>
     <string name="write_review_title">Напиши рецензија</string>
     <string name="review_text_hint">Сподели ги твоите мисли…</string>
     <string name="post_review">Објави</string>
     <string name="review_posted">Рецензијата е објавена</string>
+    <string name="review_pick_game_hint">Игра</string>
+    <string name="review_pick_game_error">Избери игра од твојата библиотека</string>
+    <string name="review_no_games_hint">Додај игра во библиотеката пред да напишеш рецензија.</string>
+    <string name="review_delete_confirm_title">Да ja избришеш рецензијата?</string>
+    <string name="review_delete_confirm_message">Ja отстрануваш оваа рецензија? Ова не може да се поврати.</string>
 
     <!-- Profile -->
     <string name="profile_title">Профил</string>
@@ -164,11 +150,34 @@
     <string name="settings_version">Верзија %1$s</string>
 
     <!-- Permissions / hardware -->
-    <string name="permission_camera_rationale">Потребен е пристап до камерата за да фотографираш омоти за игри</string>
     <string name="permission_camera_denied">Дозволата за камера е одбиена</string>
-    <string name="permission_notifications_rationale">Нотификациите те известуваат за нови рецензии</string>
 
     <!-- Notifications -->
     <string name="notification_channel_general_name">Општо</string>
     <string name="notification_channel_general_description">Општи известувања од апликацијата</string>
+
+    <!-- Players -->
+    <string name="players_title">Играчи</string>
+    <string name="players_search_hint">Пребарај играчи</string>
+    <string name="players_empty_title">Сè уште нема други играчи</string>
+    <string name="players_empty_subtitle">Играчите ќе се појават тука откако ќе се најават</string>
+    <string name="player_avatar_description">Аватар на играчот</string>
+
+    <!-- Other user profile -->
+    <string name="other_user_title">Играч</string>
+    <string name="other_user_library">Неговата библиотека</string>
+    <string name="other_user_no_games">Овој играч сè уште не додал игри</string>
+    <string name="other_user_reviews">Неговите рецензии</string>
+    <string name="other_user_no_reviews">Овој играч сè уште не напишал рецензии</string>
+
+    <!-- Edit profile -->
+    <string name="edit_profile_title">Уреди профил</string>
+    <string name="edit_profile_photo_url_hint">URL на аватар</string>
+    <string name="edit_profile_photo_url_helper">Залепи линк до твојата аватар-слика (изборно)</string>
+    <string name="edit_profile_saved">Профилот е зачуван</string>
+
+    <!-- Account gating -->
+    <string name="account_required_title">Потребна е сметка</string>
+    <string name="account_required_message">Гостите можат да прелистуваат, но за да додаваш игри, пишуваш рецензии и да го прилагодиш профилот, ти треба сметка. Најави се или регистрирај се за да продолжиш.</string>
+    <string name="account_required_sign_in">Најави се / Регистрирај се</string>
 </resources>

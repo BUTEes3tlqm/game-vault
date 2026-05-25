@@ -15,6 +15,7 @@ import mk.fikt.gamevault.R
 import mk.fikt.gamevault.databinding.FragmentProfileBinding
 import mk.fikt.gamevault.di.AppContainer
 import mk.fikt.gamevault.ui.auth.AuthActivity
+import mk.fikt.gamevault.util.requireAccount
 
 class ProfileFragment : Fragment() {
 
@@ -31,8 +32,22 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val user = AppContainer.authRepository.currentUser()
-        val label = user?.email ?: user?.displayName ?: getString(R.string.profile_anonymous)
-        binding.signedInAs.text = getString(R.string.profile_signed_in_as, label)
+        val fallback = user?.displayName ?: user?.email ?: getString(R.string.profile_anonymous)
+        binding.signedInAs.text = getString(R.string.profile_signed_in_as, fallback)
+
+        val uid = user?.uid
+        if (uid != null) {
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    AppContainer.userProfileRepository.observe(uid).collect { profile ->
+                        val label = profile?.displayName?.takeIf { it.isNotBlank() }
+                            ?: profile?.email
+                            ?: fallback
+                        binding.signedInAs.text = getString(R.string.profile_signed_in_as, label)
+                    }
+                }
+            }
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -42,6 +57,11 @@ class ProfileFragment : Fragment() {
             }
         }
 
+        binding.editProfileButton.setOnClickListener {
+            requireAccount {
+                findNavController().navigate(R.id.action_profile_to_edit)
+            }
+        }
         binding.statsButton.setOnClickListener {
             findNavController().navigate(R.id.action_profile_to_stats)
         }

@@ -12,4 +12,5 @@ data class UserProfileEntity(
     val isAnonymous: Boolean = false,
     val joinedAt: Long = System.currentTimeMillis(),
     val fcmToken: String? = null,
+    val gameCount: Int = 0,
 )

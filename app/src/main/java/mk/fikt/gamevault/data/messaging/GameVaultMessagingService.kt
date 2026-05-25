@@ -33,7 +33,10 @@ class GameVaultMessagingService : FirebaseMessagingService() {
                     FirebaseFirestore.getInstance()
                         .collection(FirestoreSchema.COLLECTION_USERS)
                         .document(uid)
-                        .set(mapOf(FirestoreSchema.FIELD_FCM_TOKEN to token), com.google.firebase.firestore.SetOptions.merge())
+                        .set(
+                            mapOf(FirestoreSchema.FIELD_FCM_TOKEN to token),
+                            com.google.firebase.firestore.SetOptions.merge(),
+                        )
                 }
             }
         }

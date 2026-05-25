@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import mk.fikt.gamevault.data.auth.AuthOutcome
 import mk.fikt.gamevault.data.auth.AuthRepository
 import mk.fikt.gamevault.di.AppContainer
@@ -52,11 +53,23 @@ class AuthViewModel(private val repo: AuthRepository) : ViewModel() {
                 if (isSignUp) AppContainer.analytics.logSignUp(method)
                 else AppContainer.analytics.logSignIn(method)
                 AppContainer.analytics.setUserId(outcome.user.uid)
+                runCatching { AppContainer.userProfileRepository.syncOnSignIn(outcome.user) }
+                fetchFcmToken()
             }
             _state.value = when (outcome) {
                 is AuthOutcome.Success -> UiState.Success
                 else -> UiState.Error(outcome)
             }
+        }
+    }
+
+    private suspend fun fetchFcmToken() {
+        if (!repo.isConfigured) return
+        runCatching {
+            val token = com.google.firebase.messaging.FirebaseMessaging.getInstance()
+                .token.await()
+            val uid = repo.currentUser()?.uid ?: return@runCatching
+            AppContainer.database.userProfileDao().updateFcmToken(uid, token)
         }
     }
 

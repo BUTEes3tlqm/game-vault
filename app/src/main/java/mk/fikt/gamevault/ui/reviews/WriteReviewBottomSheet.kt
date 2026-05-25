@@ -4,11 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.launch
 import mk.fikt.gamevault.R
+import mk.fikt.gamevault.data.local.GameEntity
 import mk.fikt.gamevault.databinding.DialogWriteReviewBinding
 
 class WriteReviewBottomSheet : BottomSheetDialogFragment() {
@@ -19,6 +26,9 @@ class WriteReviewBottomSheet : BottomSheetDialogFragment() {
         ReviewsViewModel.Factory
     }
 
+    private var selectedGameId: String? = null
+    private var selectedGameTitle: String? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
@@ -28,20 +38,34 @@ class WriteReviewBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val prefilledTitle = arguments?.getString(ARG_GAME_TITLE)
-        if (!prefilledTitle.isNullOrBlank()) {
-            binding.gameTitleInput.setText(prefilledTitle)
-            binding.gameTitleInput.isEnabled = false
+
+        val lockedGameId = arguments?.getString(ARG_GAME_ID)
+        val lockedTitle = arguments?.getString(ARG_GAME_TITLE)
+        val isLocked = !lockedGameId.isNullOrBlank() && !lockedTitle.isNullOrBlank()
+
+        if (isLocked) {
+            selectedGameId = lockedGameId
+            selectedGameTitle = lockedTitle
+            binding.gameTitleInput.setText(lockedTitle, false)
+            binding.gameTitleLayout.isEnabled = false
+        } else {
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.myGames.collect { games -> bindGameDropdown(games) }
+                }
+            }
         }
+
         binding.ratingSlider.addOnChangeListener { _, value, _ ->
             binding.ratingLabel.text = getString(R.string.field_rating) +
                 "  " + getString(R.string.rating_format, "%.1f".format(value))
         }
+
         binding.postButton.setOnClickListener {
-            val title = binding.gameTitleInput.text?.toString().orEmpty()
+            val title = selectedGameTitle.orEmpty()
             val text = binding.reviewTextInput.text?.toString().orEmpty()
-            if (title.isBlank()) {
-                binding.gameTitleLayout.error = getString(R.string.validation_title_required)
+            if (title.isBlank() || selectedGameId.isNullOrBlank()) {
+                binding.gameTitleLayout.error = getString(R.string.review_pick_game_error)
                 return@setOnClickListener
             }
             if (text.isBlank()) {
@@ -52,10 +76,28 @@ class WriteReviewBottomSheet : BottomSheetDialogFragment() {
                 gameTitle = title,
                 rating = binding.ratingSlider.value,
                 text = text,
-                gameId = arguments?.getString(ARG_GAME_ID),
+                gameId = selectedGameId,
             )
             Toast.makeText(requireContext(), R.string.review_posted, Toast.LENGTH_SHORT).show()
             dismiss()
+        }
+    }
+
+    private fun bindGameDropdown(games: List<GameEntity>) {
+        binding.noGamesHint.isVisible = games.isEmpty()
+        binding.postButton.isEnabled = games.isNotEmpty()
+        if (games.isEmpty()) {
+            binding.gameTitleInput.setAdapter(null)
+            return
+        }
+        val titles = games.map { it.title }
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, titles)
+        binding.gameTitleInput.setAdapter(adapter)
+        binding.gameTitleInput.setOnItemClickListener { _, _, position, _ ->
+            val game = games[position]
+            selectedGameId = game.id
+            selectedGameTitle = game.title
+            binding.gameTitleLayout.error = null
         }
     }
 

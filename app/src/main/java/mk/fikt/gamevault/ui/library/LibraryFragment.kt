@@ -20,6 +20,7 @@ import mk.fikt.gamevault.data.local.GameEntity
 import mk.fikt.gamevault.data.model.GameStatus
 import mk.fikt.gamevault.databinding.FragmentLibraryBinding
 import mk.fikt.gamevault.ui.details.GameDetailsFragment
+import mk.fikt.gamevault.util.requireAccount
 
 class LibraryFragment : Fragment() {
 
@@ -56,7 +57,9 @@ class LibraryFragment : Fragment() {
             viewModel.setStatusFilter(status)
         }
         binding.addFab.setOnClickListener {
-            findNavController().navigate(R.id.action_library_to_addGame)
+            requireAccount {
+                findNavController().navigate(R.id.action_library_to_addGame)
+            }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {

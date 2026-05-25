@@ -10,19 +10,23 @@ import mk.fikt.gamevault.R
 import mk.fikt.gamevault.data.local.ReviewEntity
 import mk.fikt.gamevault.databinding.ItemReviewBinding
 
-class ReviewAdapter : ListAdapter<ReviewEntity, ReviewAdapter.ReviewViewHolder>(DIFF) {
+class ReviewAdapter(
+    private val onLongClick: ((ReviewEntity) -> Unit)? = null,
+) : ListAdapter<ReviewEntity, ReviewAdapter.ReviewViewHolder>(DIFF) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReviewViewHolder {
         val binding = ItemReviewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ReviewViewHolder(binding)
+        return ReviewViewHolder(binding, onLongClick)
     }
 
     override fun onBindViewHolder(holder: ReviewViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
-    class ReviewViewHolder(private val binding: ItemReviewBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class ReviewViewHolder(
+        private val binding: ItemReviewBinding,
+        private val onLongClick: ((ReviewEntity) -> Unit)?,
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(r: ReviewEntity) {
             val ctx = binding.root.context
@@ -34,6 +38,17 @@ class ReviewAdapter : ListAdapter<ReviewEntity, ReviewAdapter.ReviewViewHolder>(
             )
             binding.author.text = "$byLine · $timeAgo"
             binding.text.text = r.text
+
+            if (onLongClick != null) {
+                binding.root.isLongClickable = true
+                binding.root.setOnLongClickListener {
+                    onLongClick.invoke(r)
+                    true
+                }
+            } else {
+                binding.root.isLongClickable = false
+                binding.root.setOnLongClickListener(null)
+            }
         }
     }
 

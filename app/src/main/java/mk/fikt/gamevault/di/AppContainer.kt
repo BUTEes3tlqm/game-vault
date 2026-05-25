@@ -12,6 +12,7 @@ import mk.fikt.gamevault.data.auth.GoogleSignInHelper
 import mk.fikt.gamevault.data.local.AppDatabase
 import mk.fikt.gamevault.data.repo.GameRepository
 import mk.fikt.gamevault.data.repo.ReviewRepository
+import mk.fikt.gamevault.data.repo.UserProfileRepository
 import mk.fikt.gamevault.util.Prefs
 
 /**
@@ -33,8 +34,25 @@ object AppContainer {
     val database: AppDatabase by lazy { AppDatabase.get(appContext) }
     val authRepository: AuthRepository by lazy { AuthRepository(firebaseAvailable) }
     val googleSignInHelper: GoogleSignInHelper by lazy { GoogleSignInHelper(appContext) }
+    val userProfileRepository: UserProfileRepository by lazy {
+        UserProfileRepository(
+            database.userProfileDao(),
+            authRepository,
+            firebaseAvailable,
+            applicationScope,
+        )
+    }
     val gameRepository: GameRepository by lazy {
-        GameRepository(database.gameDao(), authRepository)
+        GameRepository(
+            database.gameDao(),
+            authRepository,
+            firebaseAvailable,
+            applicationScope,
+        ).also { repo ->
+            repo.onCountChanged = { count ->
+                userProfileRepository.updateGameCount(count)
+            }
+        }
     }
     val reviewRepository: ReviewRepository by lazy {
         ReviewRepository(database.reviewDao(), firebaseAvailable, applicationScope)
